@@ -10,6 +10,14 @@ export class TagsService {
   }
 
   async scrapeTags() {
-    return await this.tagsRepo.scrapeTags();
+    // return await this.tagsRepo.scrapeTagsOld();
   }
+
+  // async scrapeAllTagsPages() {
+  //   return await this.tagsRepo.scrapeAllTagsPages();
+  // }
+
+  // async getTagPages(tagId) {
+  //   return await this.tagsRepo.scrapeTagAllPages(tagId);
+  // }
 }

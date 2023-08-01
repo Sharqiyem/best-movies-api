@@ -2,6 +2,8 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 
+declare const module: any;
+
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
@@ -17,5 +19,10 @@ async function bootstrap() {
   SwaggerModule.setup('api/v1', app, document);
 
   await app.listen(3000);
+
+  if (module.hot) {
+    module.hot.accept();
+    module.hot.dispose(() => app.close());
+  }
 }
 bootstrap();
