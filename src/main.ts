@@ -1,6 +1,7 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import mongoose from 'mongoose';
 
 declare const module: any;
 
@@ -18,7 +19,19 @@ async function bootstrap() {
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api/v1', app, document);
 
-  await app.listen(process.env.PORT ?? 3000);
+  const connectDB = async () => {
+    try {
+      const conn = await mongoose.connect(process.env.DB_URL);
+      console.log(`MongoDB Connected: ${conn.connection.host}`);
+    } catch (error) {
+      console.log(error);
+      process.exit(1);
+    }
+  };
+
+  connectDB().then(async () => {
+    await app.listen(process.env.PORT ?? 3000);
+  });
 
   if (module.hot) {
     module.hot.accept();
