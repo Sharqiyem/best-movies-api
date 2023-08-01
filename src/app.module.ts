@@ -21,6 +21,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
         uri: config.get('DB_URL'),
         useNewUrlParser: true,
         useUnifiedTopology: true,
+        dbName: 'bestsimilar',
       }),
       inject: [ConfigService],
     }),
