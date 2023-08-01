@@ -24,7 +24,7 @@ export class MoviesController {
 
   @Get('/scrapeall/:starterPage')
   async scrapeAllMovies(@Param('starterPage') starterPage: number) {
-    return await this.moviesRepo.scrapeAllMovies(starterPage);
+    // return await this.moviesRepo.scrapeAllMovies(starterPage);
   }
 
   @Post('/search/:page')

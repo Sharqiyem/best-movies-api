@@ -1,20 +1,20 @@
-import type { BrowserContext } from 'puppeteer';
-import { Cluster } from 'puppeteer-cluster';
+// import type { BrowserContext } from 'puppeteer';
+// import { Cluster } from 'puppeteer-cluster';
+// import { InjectContext } from 'nest-puppeteer';
+import { ConfigService } from '@nestjs/config';
 import { Injectable } from '@nestjs/common';
-import { InjectContext } from 'nest-puppeteer';
 import { Tag, TagDocument } from './tags. schema';
 import { Model } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
-import { scrollPage } from '@app/utils/scroll';
-import { scrapeMovieItem } from '@app/utils/scrapeMovieItem';
-import { ConfigService } from '@nestjs/config';
+// import { scrollPage } from '@app/utils/scroll';
+// import { scrapeMovieItem } from '@app/utils/scrapeMovieItem';
+// import { MoviesRepository } from '@app/movies/movies.repository';
 // import { Movie, MovieDocument } from '@app/movies/movies.schema';
-import { MoviesRepository } from '@app/movies/movies.repository';
 
 @Injectable()
 export class TagsRepository {
   constructor(
-    @InjectContext() private readonly browserContext: BrowserContext,
+    // @InjectContext() private readonly browserContext: BrowserContext,
     @InjectModel(Tag.name) private tagModel: Model<TagDocument>,
     // @InjectModel(Movie.name) private movieModel: Model<MovieDocument>,
     private configService: ConfigService,
@@ -146,48 +146,48 @@ export class TagsRepository {
   }
 */
 
-  async scrapeTagsImage() {
-    console.log('scrape tags images');
-    const API_URL = this.configService.get<string>('API_URL');
-    // get tags with missing images
-    const tagsWithMissingImages = await this.tagModel
-      .find({
-        img: { $regex: 'noimg256h' },
-      })
-      .sort({ title: 1 })
-      .exec();
+  // async scrapeTagsImage() {
+  //   console.log('scrape tags images');
+  //   const API_URL = this.configService.get<string>('API_URL');
+  //   // get tags with missing images
+  //   const tagsWithMissingImages = await this.tagModel
+  //     .find({
+  //       img: { $regex: 'noimg256h' },
+  //     })
+  //     .sort({ title: 1 })
+  //     .exec();
 
-    for (
-      let tagIndex = 0;
-      tagIndex < tagsWithMissingImages.length;
-      tagIndex++
-    ) {
-      const curTag = tagsWithMissingImages[tagIndex];
-      const tagId = curTag.link.split('/')?.pop();
-      console.log('scraping page ', tagIndex, curTag.link);
+  //   for (
+  //     let tagIndex = 0;
+  //     tagIndex < tagsWithMissingImages.length;
+  //     tagIndex++
+  //   ) {
+  //     const curTag = tagsWithMissingImages[tagIndex];
+  //     const tagId = curTag.link.split('/')?.pop();
+  //     console.log('scraping page ', tagIndex, curTag.link);
 
-      const page = await this.browserContext.newPage();
+  //     const page = await this.browserContext.newPage();
 
-      await page.goto(`${API_URL}/tag/${tagId}`, {
-        waitUntil: 'networkidle0',
-      });
+  //     await page.goto(`${API_URL}/tag/${tagId}`, {
+  //       waitUntil: 'networkidle0',
+  //     });
 
-      const img = await page.evaluate((element) => {
-        return (element as HTMLElement)?.getAttribute('src');
-      }, (await page.$x('//*[@id="content"]/div[1]/div[2]/div/div[2]/div[1]/div/div/img'))[0]);
+  //     const img = await page.evaluate((element) => {
+  //       return (element as HTMLElement)?.getAttribute('src');
+  //     }, (await page.$x('//*[@id="content"]/div[1]/div[2]/div/div[2]/div[1]/div/div/img'))[0]);
 
-      this.waitBeforeNextIteration(400);
-      if (img) {
-        console.log({ img: img });
-        //update db tag image
-        await this.tagModel.findOneAndUpdate({ _id: curTag._id }, { img });
-      }
+  //     this.waitBeforeNextIteration(400);
+  //     if (img) {
+  //       console.log({ img: img });
+  //       //update db tag image
+  //       await this.tagModel.findOneAndUpdate({ _id: curTag._id }, { img });
+  //     }
 
-      // console.log(doc);
-    }
+  //     // console.log(doc);
+  //   }
 
-    return [];
-  }
+  //   return [];
+  // }
 
   waitBeforeNextIteration(ms) {
     return new Promise((resolve) => setTimeout(resolve, ms));

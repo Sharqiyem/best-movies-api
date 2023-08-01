@@ -1,6 +1,6 @@
-import type { BrowserContext } from 'puppeteer';
+// import type { BrowserContext } from 'puppeteer';
 import { Injectable } from '@nestjs/common';
-import { InjectContext } from 'nest-puppeteer';
+// import { InjectContext } from 'nest-puppeteer';
 import { Movie, MovieDocument } from './movies.schema';
 import { PaginateModel } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
@@ -67,7 +67,7 @@ export class MoviesRepository {
 
   constructor(
     private configService: ConfigService,
-    @InjectContext() private readonly browserContext: BrowserContext,
+    // @InjectContext() private readonly browserContext: BrowserContext,
     @InjectModel(Movie.name) private movieModel: PaginateModel<MovieDocument>,
     private tagsRepo: TagsRepository,
   ) {}
@@ -230,7 +230,7 @@ export class MoviesRepository {
     const data = await this.movieModel.findOne({ movieId: id });
     if (data) return data;
 
-    return await this.scrapeMovie(id);
+    // return await this.scrapeMovie(id);
   }
 
   async getSimilarMovies(movieId: string) {
@@ -413,110 +413,110 @@ export class MoviesRepository {
     return res;
   }
 
-  async scrapeAllMovies(starterPage: number) {
-    // await this.movieModel.deleteMany();
-    // fetch all tags from DB
-    // for each tag do this
-    console.log('start scrape from starterPage', starterPage);
-    // return;
+  // async scrapeAllMovies(starterPage: number) {
+  //   // await this.movieModel.deleteMany();
+  //   // fetch all tags from DB
+  //   // for each tag do this
+  //   console.log('start scrape from starterPage', starterPage);
+  //   // return;
 
-    const tagsList = await this.tagsRepo.getAll();
-    // return tagsList;
+  //   const tagsList = await this.tagsRepo.getAll();
+  //   // return tagsList;
 
-    const page = await this.browserContext.newPage();
+  //   const page = await this.browserContext.newPage();
 
-    const dbMovies = await this.movieModel.find();
-    const moviesDic = dbMovies.map((s) => s.link);
+  //   const dbMovies = await this.movieModel.find();
+  //   const moviesDic = dbMovies.map((s) => s.link);
 
-    for (let tagIndex = starterPage; tagIndex > 0; tagIndex--) {
-      const tagId = tagsList[tagIndex].link?.split('/')?.pop();
-      // '10301-10-year-old'; //
-      console.log('start scrape tag all pages ', tagId, tagIndex);
+  //   for (let tagIndex = starterPage; tagIndex > 0; tagIndex--) {
+  //     const tagId = tagsList[tagIndex].link?.split('/')?.pop();
+  //     // '10301-10-year-old'; //
+  //     console.log('start scrape tag all pages ', tagId, tagIndex);
 
-      let pageIndex = 1;
-      let hasNextPage = true;
-      const results = [];
+  //     let pageIndex = 1;
+  //     let hasNextPage = true;
+  //     const results = [];
 
-      //Loop over pages
-      while (hasNextPage) {
-        //get all movies from db
+  //     //Loop over pages
+  //     while (hasNextPage) {
+  //       //get all movies from db
 
-        console.log('Page ', pageIndex);
-        const API_URL = this.configService.get<string>('API_URL');
+  //       console.log('Page ', pageIndex);
+  //       const API_URL = this.configService.get<string>('API_URL');
 
-        // const page = await this.browserContext.newPage();
-        await page.goto(`${API_URL}/tag/${tagId}?page=${pageIndex}`, {
-          waitUntil: 'networkidle0',
-        });
+  //       // const page = await this.browserContext.newPage();
+  //       await page.goto(`${API_URL}/tag/${tagId}?page=${pageIndex}`, {
+  //         waitUntil: 'networkidle0',
+  //       });
 
-        const items = await page.$$('.item.item-small');
-        console.log('items', items.length);
-        for (const selectedItem of items) {
-          const result = await scrapeMovieItem(selectedItem);
-          const movieModel = this.convert(result);
-          if (!moviesDic.find((s) => s === result.link)) {
-            results.push(movieModel);
-          } else {
-            moviesDic.push(result.link);
-          }
-        }
+  //       const items = await page.$$('.item.item-small');
+  //       console.log('items', items.length);
+  //       for (const selectedItem of items) {
+  //         const result = await scrapeMovieItem(selectedItem);
+  //         const movieModel = this.convert(result);
+  //         if (!moviesDic.find((s) => s === result.link)) {
+  //           results.push(movieModel);
+  //         } else {
+  //           moviesDic.push(result.link);
+  //         }
+  //       }
 
-        //check if next true
-        const pagination = await page.$('.pagination.pagination-lg');
-        if (!pagination) {
-          break;
-        }
+  //       //check if next true
+  //       const pagination = await page.$('.pagination.pagination-lg');
+  //       if (!pagination) {
+  //         break;
+  //       }
 
-        const disabledEl = await page.$('.disabled');
-        // const isDisabled = disabledEl !== null;
+  //       const disabledEl = await page.$('.disabled');
+  //       // const isDisabled = disabledEl !== null;
 
-        const isLast =
-          (await disabledEl?.$eval(`a`, (el) => el.innerText)) === '→';
+  //       const isLast =
+  //         (await disabledEl?.$eval(`a`, (el) => el.innerText)) === '→';
 
-        hasNextPage = !isLast;
-        // console.log('Is next', { isDisabled, isNext: hasNextPage, isLast });
-        if (hasNextPage) {
-          pageIndex++;
-        }
-        this.waitBeforeNextIteration(500);
-      }
+  //       hasNextPage = !isLast;
+  //       // console.log('Is next', { isDisabled, isNext: hasNextPage, isLast });
+  //       if (hasNextPage) {
+  //         pageIndex++;
+  //       }
+  //       this.waitBeforeNextIteration(500);
+  //     }
 
-      //check if movie already in db
+  //     //check if movie already in db
 
-      console.log('movies dic', moviesDic.length);
-      console.log('results', results.length);
-      await this.movieModel.insertMany(results);
-    }
-    // this.starterPage += this.countPerIteration;
-    return [];
-  }
+  //     console.log('movies dic', moviesDic.length);
+  //     console.log('results', results.length);
+  //     await this.movieModel.insertMany(results);
+  //   }
+  //   // this.starterPage += this.countPerIteration;
+  //   return [];
+  // }
 
-  private async scrapeMovie(movieId: string) {
-    console.log('scrape movie page ', movieId);
+  // private async scrapeMovie(movieId: string) {
+  //   console.log('scrape movie page ', movieId);
 
-    const page = await this.browserContext.newPage();
-    const API_URL = this.configService.get<string>('API_URL');
+  //   const page = await this.browserContext.newPage();
+  //   const API_URL = this.configService.get<string>('API_URL');
 
-    await page.goto(`${API_URL}/movies/${movieId}`);
+  //   await page.goto(`${API_URL}/movies/${movieId}`);
 
-    scrollPage(page);
+  //   scrollPage(page);
 
-    const results = [];
+  //   const results = [];
 
-    const curMovie = await page.$('.item.item-big');
-    const result = await scrapeMovieItem(curMovie);
-    results.push(result);
+  //   const curMovie = await page.$('.item.item-big');
+  //   const result = await scrapeMovieItem(curMovie);
+  //   results.push(result);
 
-    const items = await page.$$('.item.item-small');
-    console.log('items', items.length);
+  //   const items = await page.$$('.item.item-small');
+  //   console.log('items', items.length);
 
-    for (const selectedItem of items) {
-      const result = await scrapeMovieItem(selectedItem);
+  //   for (const selectedItem of items) {
+  //     const result = await scrapeMovieItem(selectedItem);
 
-      results.push(result);
-    }
-    return results;
-  }
+  //     results.push(result);
+  //   }
+  //   return results;
+  // }
 
   private convert(movie) {
     const movieItem = { ...movie };

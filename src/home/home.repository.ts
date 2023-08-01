@@ -1,6 +1,6 @@
 import type { BrowserContext } from 'puppeteer';
 import { Injectable } from '@nestjs/common';
-import { InjectContext } from 'nest-puppeteer';
+// import { InjectContext } from 'nest-puppeteer';
 import { Home, HomeDocument } from './home. schema';
 import { Model } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
@@ -14,7 +14,7 @@ export class HomeRepository {
 
   constructor(
     private configService: ConfigService,
-    @InjectContext() private readonly browserContext: BrowserContext,
+    // @InjectContext() private readonly browserContext: BrowserContext,
     @InjectModel(Home.name) private homeModel: Model<HomeDocument>,
     private moviesRepo: MoviesRepository,
   ) {}
@@ -101,54 +101,54 @@ export class HomeRepository {
     }
   }
 
-  private async scrapeHome() {
-    console.log('Start scraping home');
-    const page = await this.browserContext.newPage();
+  // private async scrapeHome() {
+  //   console.log('Start scraping home');
+  //   const page = await this.browserContext.newPage();
 
-    const API_URL = this.configService.get<string>('API_URL');
+  //   const API_URL = this.configService.get<string>('API_URL');
 
-    await page.goto(API_URL, {
-      waitUntil: 'networkidle0',
-    });
+  //   await page.goto(API_URL, {
+  //     waitUntil: 'networkidle0',
+  //   });
 
-    await scrollPage(page);
+  //   await scrollPage(page);
 
-    const items = await page.$$('.section2');
+  //   const items = await page.$$('.section2');
 
-    const sections = [];
-    for (const section of items) {
-      const { sectionTitle } = await section.$eval(`h3`, (el) => ({
-        sectionTitle: el.innerText,
-      }));
+  //   const sections = [];
+  //   for (const section of items) {
+  //     const { sectionTitle } = await section.$eval(`h3`, (el) => ({
+  //       sectionTitle: el.innerText,
+  //     }));
 
-      console.log('Section title', sectionTitle);
+  //     console.log('Section title', sectionTitle);
 
-      const movies = await section.$$(`.block-ins-item`);
-      console.log(movies.length);
+  //     const movies = await section.$$(`.block-ins-item`);
+  //     console.log(movies.length);
 
-      const sectionItems = [];
-      for (const movie of movies) {
-        const { link } = await movie.$eval(`a`, (el) => ({
-          link: el.href,
-        }));
+  //     const sectionItems = [];
+  //     for (const movie of movies) {
+  //       const { link } = await movie.$eval(`a`, (el) => ({
+  //         link: el.href,
+  //       }));
 
-        const { title } = await movie.$eval(`.block-ins-caption a`, (el) => ({
-          title: el.innerText,
-        }));
+  //       const { title } = await movie.$eval(`.block-ins-caption a`, (el) => ({
+  //         title: el.innerText,
+  //       }));
 
-        const img = await movie.$eval(`img`, (el) => el.src);
+  //       const img = await movie.$eval(`img`, (el) => el.src);
 
-        console.log({ title, link, img });
+  //       console.log({ title, link, img });
 
-        sectionItems.push({ title, link, img });
-      }
+  //       sectionItems.push({ title, link, img });
+  //     }
 
-      sections.push({
-        title: sectionTitle,
-        data: [{ list: sectionItems }],
-      });
-    }
-    this.homeData = sections;
-    return sections;
-  }
+  //     sections.push({
+  //       title: sectionTitle,
+  //       data: [{ list: sectionItems }],
+  //     });
+  //   }
+  //   this.homeData = sections;
+  //   return sections;
+  // }
 }

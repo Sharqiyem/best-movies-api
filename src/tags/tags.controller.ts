@@ -27,7 +27,7 @@ export class TagsController {
   // Scarpe all tag's pages
   @Get()
   async scrapeMissingTagsImag() {
-    return await this.tagsRepo.scrapeTagsImage();
+    // return await this.tagsRepo.scrapeTagsImage();
   }
 
   // @Get('/:tagId/all')
