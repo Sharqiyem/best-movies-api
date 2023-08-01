@@ -30,7 +30,7 @@ async function bootstrap() {
   };
 
   connectDB().then(async () => {
-    await app.listen(process.env.PORT ?? 3000);
+    await app.listen(process.env.PORT || 3000);
   });
 
   if (module.hot) {
