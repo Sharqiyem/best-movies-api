@@ -7,6 +7,7 @@ declare const module: any;
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+  app.UseCors();
 
   app.setGlobalPrefix('/api/v1');
 
