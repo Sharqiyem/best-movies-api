@@ -26,7 +26,7 @@ export class TagsRepository {
 
   async getAllTags(page: number) {
     console.log('page', page);
-    const limit = 10;
+    const limit = 100;
     const skip = (page - 1) * limit;
     const total = await this.tagModel.countDocuments({}).exec();
     const page_total = Math.floor((total - 1) / limit) + 1;
