@@ -1,13 +1,9 @@
-// import type { BrowserContext } from 'puppeteer';
-import { Injectable } from '@nestjs/common';
-// import { InjectContext } from 'nest-puppeteer';
+import { BadRequestException, Injectable, Res } from '@nestjs/common';
 import { Movie, MovieDocument } from './movies.schema';
 import { PaginateModel } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
-import { scrollPage } from '@app/utils/scroll';
-import { scrapeMovieItem } from '@app/utils/scrapeMovieItem';
 import { ConfigService } from '@nestjs/config';
-import { TagsRepository } from '@app/tags/tags.repository';
+import { TagsRepository } from '../tags/tags.repository';
 import { FilterDto, MOVIE_TYPE } from './filter.dto';
 import { json2csv } from 'json-2-csv';
 import * as fs from 'fs';
@@ -67,7 +63,6 @@ export class MoviesRepository {
 
   constructor(
     private configService: ConfigService,
-    // @InjectContext() private readonly browserContext: BrowserContext,
     @InjectModel(Movie.name) private movieModel: PaginateModel<MovieDocument>,
     private tagsRepo: TagsRepository,
   ) {}
@@ -106,13 +101,8 @@ export class MoviesRepository {
       fDoc.country = doc.country.slice(0, 3).join(' ').toLowerCase();
       fDoc.genre = doc.genre.slice(0, 3).join(' ').toLowerCase();
       fDoc.plot = doc.plot.slice(0, 2).join(' ').toLowerCase();
-      // fDoc.year = doc.year;
-      // fDoc.movieId = doc.movieId;
       fDoc.story = doc.story?.replace(',', ' ').toLowerCase();
-      // fDoc.audience = doc.audience.join(' ').toLowerCase();
-      // fDoc.place = doc.place.join(' ').toLowerCase();
-      // fDoc.style = doc.style.join(' ').toLowerCase();
-      // fDoc.time = doc.time.join(' ').toLowerCase();
+
       formatedData.push(fDoc);
     });
 
@@ -121,9 +111,6 @@ export class MoviesRepository {
     try {
       const csv = await json2csv(formatedData, { delimiter: { field: ',' } });
 
-      // print CSV string
-      // console.log(csv);
-
       // write CSV to a file
       fs.writeFileSync('movies_dataset_last40k.csv', csv);
     } catch (err) {
@@ -131,29 +118,6 @@ export class MoviesRepository {
     }
 
     return formatedData;
-  }
-
-  async fixGenres() {
-    // FIX_GENRES
-    // const missedKeys = Object.keys(this.missedDic);
-    // const dbGenres = await this.movieModel.find().select({ genre: 1 });
-    // dbGenres.forEach(async (g) => {
-    //   const res = [];
-    //   g.genre.forEach((e) => {
-    //     if (missedKeys.includes(e)) {
-    //       res.push(this.missedDic[e]);
-    //     } else {
-    //       res.push(e);
-    //     }
-    //   });
-    //   const changedDoc = await this.movieModel.updateOne(
-    //     { _id: g._id },
-    //     { $set: { genre: res } },
-    //   );
-    //   console.log(`${g.genre} => ${res}`);
-    //   console.log(`changedDoc: ${JSON.stringify(changedDoc, null, 2)}`);
-    // });
-    // return res;
   }
 
   async getPopularMovies(page = 1, limit: number = HOME_LIST_MAX) {
@@ -224,20 +188,19 @@ export class MoviesRepository {
   }
 
   async getMovie(id: string) {
-    // check movie in db
-    // if doesn't exist scrape it and save it DB
-    // if exist return it
     const data = await this.movieModel.findOne({ movieId: id });
     if (data) return data;
 
-    // return await this.scrapeMovie(id);
+    throw new BadRequestException(`Invalid movie id ${id}`);
   }
 
   async getSimilarMovies(movieId: string) {
     const data = await this.movieModel.findOne({ movieId }).select({ sim: 1 });
 
-    console.log('sim ids', data.sim);
-    const res = await this.movieModel.find({ _id: { $in: data.sim } });
+    if (!data) throw new BadRequestException(`Invalid movie id ${movieId}`);
+
+    console.log('sim ids', data?.sim);
+    const res = await this.movieModel.find({ _id: { $in: data?.sim } });
 
     // .select({ title: 1 });
     //reorder
@@ -413,111 +376,6 @@ export class MoviesRepository {
     return res;
   }
 
-  // async scrapeAllMovies(starterPage: number) {
-  //   // await this.movieModel.deleteMany();
-  //   // fetch all tags from DB
-  //   // for each tag do this
-  //   console.log('start scrape from starterPage', starterPage);
-  //   // return;
-
-  //   const tagsList = await this.tagsRepo.getAll();
-  //   // return tagsList;
-
-  //   const page = await this.browserContext.newPage();
-
-  //   const dbMovies = await this.movieModel.find();
-  //   const moviesDic = dbMovies.map((s) => s.link);
-
-  //   for (let tagIndex = starterPage; tagIndex > 0; tagIndex--) {
-  //     const tagId = tagsList[tagIndex].link?.split('/')?.pop();
-  //     // '10301-10-year-old'; //
-  //     console.log('start scrape tag all pages ', tagId, tagIndex);
-
-  //     let pageIndex = 1;
-  //     let hasNextPage = true;
-  //     const results = [];
-
-  //     //Loop over pages
-  //     while (hasNextPage) {
-  //       //get all movies from db
-
-  //       console.log('Page ', pageIndex);
-  //       const API_URL = this.configService.get<string>('API_URL');
-
-  //       // const page = await this.browserContext.newPage();
-  //       await page.goto(`${API_URL}/tag/${tagId}?page=${pageIndex}`, {
-  //         waitUntil: 'networkidle0',
-  //       });
-
-  //       const items = await page.$$('.item.item-small');
-  //       console.log('items', items.length);
-  //       for (const selectedItem of items) {
-  //         const result = await scrapeMovieItem(selectedItem);
-  //         const movieModel = this.convert(result);
-  //         if (!moviesDic.find((s) => s === result.link)) {
-  //           results.push(movieModel);
-  //         } else {
-  //           moviesDic.push(result.link);
-  //         }
-  //       }
-
-  //       //check if next true
-  //       const pagination = await page.$('.pagination.pagination-lg');
-  //       if (!pagination) {
-  //         break;
-  //       }
-
-  //       const disabledEl = await page.$('.disabled');
-  //       // const isDisabled = disabledEl !== null;
-
-  //       const isLast =
-  //         (await disabledEl?.$eval(`a`, (el) => el.innerText)) === '→';
-
-  //       hasNextPage = !isLast;
-  //       // console.log('Is next', { isDisabled, isNext: hasNextPage, isLast });
-  //       if (hasNextPage) {
-  //         pageIndex++;
-  //       }
-  //       this.waitBeforeNextIteration(500);
-  //     }
-
-  //     //check if movie already in db
-
-  //     console.log('movies dic', moviesDic.length);
-  //     console.log('results', results.length);
-  //     await this.movieModel.insertMany(results);
-  //   }
-  //   // this.starterPage += this.countPerIteration;
-  //   return [];
-  // }
-
-  // private async scrapeMovie(movieId: string) {
-  //   console.log('scrape movie page ', movieId);
-
-  //   const page = await this.browserContext.newPage();
-  //   const API_URL = this.configService.get<string>('API_URL');
-
-  //   await page.goto(`${API_URL}/movies/${movieId}`);
-
-  //   scrollPage(page);
-
-  //   const results = [];
-
-  //   const curMovie = await page.$('.item.item-big');
-  //   const result = await scrapeMovieItem(curMovie);
-  //   results.push(result);
-
-  //   const items = await page.$$('.item.item-small');
-  //   console.log('items', items.length);
-
-  //   for (const selectedItem of items) {
-  //     const result = await scrapeMovieItem(selectedItem);
-
-  //     results.push(result);
-  //   }
-  //   return results;
-  // }
-
   private convert(movie) {
     const movieItem = { ...movie };
     movieItem.year = parseInt(
@@ -546,7 +404,7 @@ export class MoviesRepository {
     return movieItem;
   }
 
-  waitBeforeNextIteration(ms) {
+  private waitBeforeNextIteration(ms) {
     return new Promise((resolve) => setTimeout(resolve, ms));
   }
 

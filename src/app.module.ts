@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 // import { PuppeteerModule } from 'nest-puppeteer';
 import { MongooseModule } from '@nestjs/mongoose';
-import { TagsModule } from '@app/tags/tags.module';
+import { TagsModule } from './tags/tags.module';
 import { HomeModule } from './home/home.module';
 import { MoviesModule } from './movies/movies.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
@@ -11,10 +11,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
     ConfigModule.forRoot({
       isGlobal: true,
     }),
-    // PuppeteerModule.forRoot(),
-    // MongooseModule.forRoot('mongodb://root:rootpassword@localhost:27018', {
-    //   dbName: 'bestsimilar',
-    // }),
+
     MongooseModule.forRootAsync({
       imports: [ConfigModule],
       useFactory: async (config: ConfigService) => ({

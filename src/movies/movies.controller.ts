@@ -17,16 +17,6 @@ export class MoviesController {
     return await this.moviesService.getAllMovies();
   }
 
-  @Get('/fixg')
-  async fixGenres() {
-    return await this.moviesRepo.fixGenres();
-  }
-
-  @Get('/scrapeall/:starterPage')
-  async scrapeAllMovies(@Param('starterPage') starterPage: number) {
-    // return await this.moviesRepo.scrapeAllMovies(starterPage);
-  }
-
   @Post('/search/:page')
   async search(@Param('page') page: number, @Body() query: FilterDto) {
     const page1 = page || 1;

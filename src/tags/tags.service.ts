@@ -8,16 +8,4 @@ export class TagsService {
   async getAllTags(page: number) {
     return await this.tagsRepo.getAllTags(page);
   }
-
-  async scrapeTags() {
-    // return await this.tagsRepo.scrapeTagsOld();
-  }
-
-  // async scrapeAllTagsPages() {
-  //   return await this.tagsRepo.scrapeAllTagsPages();
-  // }
-
-  // async getTagPages(tagId) {
-  //   return await this.tagsRepo.scrapeTagAllPages(tagId);
-  // }
 }

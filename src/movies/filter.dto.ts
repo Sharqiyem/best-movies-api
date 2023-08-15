@@ -3,6 +3,7 @@ export enum MOVIE_TYPE {
   MOVIES = 'movies',
   TV_SHOWS = 'tv-shows',
 }
+
 export class FilterDto {
   title: string;
   countries: string[];

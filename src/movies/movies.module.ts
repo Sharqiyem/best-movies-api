@@ -4,7 +4,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { MoviesController } from './movies.controller';
 import { MoviesRepository } from './movies.repository';
 import { MoviesService } from './movies.service';
-import { TagsModule } from '@app/tags/tags.module';
+import { TagsModule } from '../tags/tags.module';
 
 @Module({
   imports: [

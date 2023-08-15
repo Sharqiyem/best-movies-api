@@ -12,11 +12,11 @@ async function bootstrap() {
   app.setGlobalPrefix('/api/v1');
 
   const config = new DocumentBuilder()
-    .setTitle('Cats example')
-    .setDescription('The cats API description')
+    .setTitle('Best Movie Similars API')
+    .setDescription('Search and find best similars movies')
     .setVersion('1.0')
-    .addTag('cats')
     .build();
+
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api/v1', app, document);
 

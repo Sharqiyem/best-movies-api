@@ -1,9 +1,17 @@
 import { Controller, Get, Param } from '@nestjs/common';
 import { HomService } from './home.service';
+import { ApiTags } from '@nestjs/swagger';
 
+@ApiTags('Home')
 @Controller('home')
 export class HomesController {
   constructor(private homeService: HomService) {}
+
+  @Get('/check')
+  async check() {
+    console.log('check api health');
+    return 'OK';
+  }
 
   @Get()
   async getAllHomes() {

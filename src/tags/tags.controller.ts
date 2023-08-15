@@ -11,11 +11,6 @@ export class TagsController {
     private tagsRepo: TagsRepository,
   ) {}
 
-  // @Get('scrape')
-  // async scrapeTags() {
-  //   return await this.tagsService.scrapeTags();
-  // }
-
   //API: get tags by page
   @Get(':page')
   async getAllTags(@Param('page') page: number) {
@@ -23,15 +18,4 @@ export class TagsController {
     console.log('getAllTags page', page1);
     return await this.tagsService.getAllTags(page1);
   }
-
-  // Scarpe all tag's pages
-  @Get()
-  async scrapeMissingTagsImag() {
-    // return await this.tagsRepo.scrapeTagsImage();
-  }
-
-  // @Get('/:tagId/all')
-  // async getTagPages(@Param('tagId') tagId: string) {
-  //   return await this.tagsService.getTagPages(tagId);
-  // }
 }
