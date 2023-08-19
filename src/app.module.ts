@@ -1,27 +1,17 @@
 import { Module } from '@nestjs/common';
 // import { PuppeteerModule } from 'nest-puppeteer';
-import { MongooseModule } from '@nestjs/mongoose';
 import { TagsModule } from './tags/tags.module';
 import { HomeModule } from './home/home.module';
 import { MoviesModule } from './movies/movies.module';
-import { ConfigModule, ConfigService } from '@nestjs/config';
+import { ConfigModule } from '@nestjs/config';
+import { DatabaseModule } from './database/database.module';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
     }),
-
-    MongooseModule.forRootAsync({
-      imports: [ConfigModule],
-      useFactory: async (config: ConfigService) => ({
-        uri: config.get('DB_URL'),
-        useNewUrlParser: true,
-        useUnifiedTopology: true,
-        dbName: 'bestsimilar',
-      }),
-      inject: [ConfigService],
-    }),
+    DatabaseModule,
 
     HomeModule,
     MoviesModule,

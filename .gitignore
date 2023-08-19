@@ -35,3 +35,5 @@ lerna-debug.log*
 !.vscode/extensions.json
 
 .env
+movies_dataset_1.csv
+movies_dataset_2.csv

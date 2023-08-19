@@ -1,17 +1,12 @@
 import { Module } from '@nestjs/common';
-import { Home, HomeSchema } from './home. schema';
-import { MongooseModule } from '@nestjs/mongoose';
 import { HomesController } from './home.controller';
-import { HomeRepository } from './home.repository';
 import { HomService } from './home.service';
 import { MoviesModule } from '../movies/movies.module';
+import { TagsModule } from '../tags/tags.module';
 
 @Module({
-  imports: [
-    MongooseModule.forFeature([{ name: Home.name, schema: HomeSchema }]),
-    MoviesModule,
-  ],
+  imports: [MoviesModule, TagsModule],
   controllers: [HomesController],
-  providers: [HomService, HomeRepository],
+  providers: [HomService],
 })
 export class HomeModule {}

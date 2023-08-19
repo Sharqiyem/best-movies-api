@@ -1,15 +1,11 @@
 import { Controller, Get, Param } from '@nestjs/common';
 import { TagsService } from './tags.service';
 import { ApiTags } from '@nestjs/swagger';
-import { TagsRepository } from './tags.repository';
 
 @ApiTags('Tags')
 @Controller('tags')
 export class TagsController {
-  constructor(
-    private tagsService: TagsService,
-    private tagsRepo: TagsRepository,
-  ) {}
+  constructor(private readonly tagsService: TagsService) {}
 
   //API: get tags by page
   @Get(':page')

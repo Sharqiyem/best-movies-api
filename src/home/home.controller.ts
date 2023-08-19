@@ -5,7 +5,7 @@ import { ApiTags } from '@nestjs/swagger';
 @ApiTags('Home')
 @Controller('home')
 export class HomesController {
-  constructor(private homeService: HomService) {}
+  constructor(private readonly homeService: HomService) {}
 
   @Get('/check')
   async check() {
@@ -19,13 +19,13 @@ export class HomesController {
     return await this.homeService.getHome();
   }
 
-  @Get('/list/:listId/:page')
-  async getPopularMovies(
+  @Get('/list/:type/:page')
+  async getPopularByType(
     @Param('page') page: number,
-    @Param('listId') listId: string,
+    @Param('type') type: string,
   ) {
-    console.log('get list', listId, page);
-    switch (listId) {
+    console.log('get list', type, page);
+    switch (type) {
       case 'movies':
         return await this.homeService.getPopularMovies(page);
       case 'tvshows':

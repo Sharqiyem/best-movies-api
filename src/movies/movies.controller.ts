@@ -1,32 +1,32 @@
-import { Body, Controller, Get, Param, Post, Query } from '@nestjs/common';
+import { Body, Controller, Get, HttpCode, Param, Post } from '@nestjs/common';
 import { MoviesService } from './movies.service';
 import { ApiTags } from '@nestjs/swagger';
-import { MoviesRepository } from './movies.repository';
-import { FilterDto } from './filter.dto';
+import { FilterDto } from './dtos/filter.dto';
+import { Movie } from './movies.schema';
 
 @ApiTags('Movies')
 @Controller('movies')
 export class MoviesController {
-  constructor(
-    private moviesService: MoviesService,
-    private moviesRepo: MoviesRepository,
-  ) {}
+  constructor(private readonly moviesService: MoviesService) {}
 
-  @Get()
-  async getAllMovies() {
-    return await this.moviesService.getAllMovies();
-  }
+  @Get(':id')
+  async getMovie(@Param('id') id: string): Promise<Movie> {
+    console.log('getMovie', id);
 
-  @Post('/search/:page')
-  async search(@Param('page') page: number, @Body() query: FilterDto) {
-    const page1 = page || 1;
-    return await this.moviesRepo.search(page1, query);
+    return this.moviesService.getMovie(id);
   }
 
   @Get('/similars/:id')
-  async getSimilarMovies(@Param('id') id: string) {
+  async getSimilarMovies(@Param('id') id: string): Promise<Movie[]> {
     console.log('getSimilarMovies', id);
-    return await this.moviesService.getSimilarMovies(id);
+    return this.moviesService.getSimilarMovies(id);
+  }
+
+  @HttpCode(200)
+  @Post('/search/:page')
+  async search(@Param('page') page: number, @Body() query: FilterDto) {
+    const page1 = page || 1;
+    return await this.moviesService.search(page1, query);
   }
 
   @Get('/tag/:id/:page')
@@ -35,15 +35,9 @@ export class MoviesController {
     return await this.moviesService.getTagMovies(id, page ?? 1);
   }
 
-  @Get(':id')
-  async getMovie(@Param('id') id: string) {
-    console.log('getMovie', id);
-    return await this.moviesService.getMovie(id);
-  }
-
-  @Get('/genre/:genre')
-  async getByGener(@Param('genre') genre: string) {
-    console.log('getByGener', genre);
-    return await this.moviesService.getByGener(genre);
+  @Get('/genre/:genre/:page')
+  async getByGener(@Param('genre') genre: string, @Param('page') page: number) {
+    console.log('getByGener', genre, page);
+    return await this.moviesService.getByGener(page, genre);
   }
 }
