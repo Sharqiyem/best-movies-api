@@ -64,56 +64,6 @@ export class MoviesService {
     private configService: ConfigService,
     @InjectModel(Movie.name) private movieModel: PaginateModel<MovieDocument>,
   ) {}
-  // getMovie(id: string) {
-  //   console.log('getMovie called', id);
-  //   return {
-  //     movieId: '140029-hijabers-in-love',
-  //     title: '1movie title',
-  //     link: '1http://link.com/movieid',
-  //     year: 12000,
-  //     img: '1http://link.com/movieid/1.png',
-  //     video: '1videoid',
-  //     votes: '122',
-  //     isTVShow: true,
-  //     genre: ['Action', 'Drama'],
-  //     duration: '90min',
-  //     audience: ['teens'],
-  //     time: ['21centry'],
-  //     story: '',
-  //     country: ['USA', 'Japan'],
-  //     keyword: '',
-  //     place: [''],
-  //     plot: [''],
-  //     style: [''],
-  //     sim: ['1,2,3'],
-  //   };
-  // }
-  // getSimilarMovies(id: string) {
-  //   console.log('getSimilarMovies called', id);
-  //   return [
-  //     {
-  //       movieId: '140029-hijabers-in-love',
-  //       title: '1movie title',
-  //       link: '1http://link.com/movieid',
-  //       year: 12000,
-  //       img: '1http://link.com/movieid/1.png',
-  //       video: '1videoid',
-  //       votes: '122',
-  //       isTVShow: true,
-  //       genre: ['Action', 'Drama'],
-  //       duration: '90min',
-  //       audience: ['teens'],
-  //       time: ['21centry'],
-  //       story: '',
-  //       country: ['USA', 'Japan'],
-  //       keyword: '',
-  //       place: [''],
-  //       plot: [''],
-  //       style: [''],
-  //       sim: ['1,2,3'],
-  //     },
-  //   ];
-  // }
 
   async generateMLData() {
     // [ 'title', 'rating',  'country', 'genre', 'plot', ]
@@ -194,13 +144,7 @@ export class MoviesService {
     return res;
   }
 
-  // async getAllMovies() {
-  //   return await this.movieModel.find();
-  // }
-
   async getMovie(id: string): Promise<Movie> {
-    console.log('NODE_ENV', this.configService.get<string>('NODE_ENV'));
-
     const data = await this.movieModel.findOne({ movieId: id });
     if (data) return data;
 

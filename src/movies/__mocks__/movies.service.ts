@@ -1,6 +1,5 @@
 import { movieStub } from '../test/stubs/movie.stub';
 
-export const UsersService = jest.fn().mockReturnValue({
+export const MoviesService = jest.fn().mockReturnValue({
   getMovie: jest.fn().mockResolvedValue(movieStub()),
-  getSimilarMovies: jest.fn().mockResolvedValue([movieStub()]),
 });

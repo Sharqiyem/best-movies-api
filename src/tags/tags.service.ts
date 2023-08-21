@@ -31,7 +31,6 @@ export class TagsService {
   }
 
   async getTagsByNames(tags: string[]) {
-    // console.log('tags', tags);
     return await this.tagModel.find({ title: { $in: tags } });
   }
 

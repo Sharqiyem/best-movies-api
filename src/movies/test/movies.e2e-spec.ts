@@ -41,6 +41,17 @@ describe('Movies (e2e)', () => {
     expect(response.body).toMatchObject(movieStub());
   });
 
+  it('/movies/{id} (GET) - bad request', async () => {
+    // await dbConnection.collection('movies').insertOne(movieStub());
+    const response = await request(httpServer).get(
+      `/movies/${movieStub().movieId}`,
+    );
+    expect(response.status).toBe(400);
+    expect(response.body).toMatchObject({
+      message: `Invalid movie id ${movieStub().movieId}`,
+    });
+  });
+
   it('/movies/genre/:genre/:page (GET)', async () => {
     const testObj = movieStub();
     const insertedObj = await dbConnection
@@ -63,33 +74,23 @@ describe('Movies (e2e)', () => {
     };
 
     expect(response.status).toBe(200);
+
     expect(response.body.data).toMatchObject([resObj]);
   });
 
   it('/movies/search/:page (GET)', async () => {
     const testObj = movieStub();
-    const insertedObj = await dbConnection
-      .collection('movies')
-      .insertOne(testObj);
+    await dbConnection.collection('movies').insertOne(testObj);
     const response = await request(httpServer)
       .post(`/movies/search/1`)
       .send({
         genres: ['Action'],
       });
 
-    const resObj = {
-      _id: insertedObj.insertedId.toString(),
-      title: testObj.title,
-      link: testObj.link,
-      img: testObj.img,
-      rating: testObj.rating,
-      votes: testObj.votes,
-      isTVShow: testObj.isTVShow,
-      genre: testObj.genre,
-      country: testObj.country,
-    };
+    const resObj = response.body.data[0];
+    delete resObj._id;
 
     expect(response.status).toBe(200);
-    expect(response.body.data).toMatchObject([resObj]);
+    expect(testObj).toMatchObject(resObj);
   });
 });

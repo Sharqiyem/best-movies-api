@@ -1,14 +1,12 @@
 import { Injectable } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
 import { MoviesService } from '../movies/movies.service';
 import { TagsService } from '../tags/tags.service';
 
 @Injectable()
-export class HomService {
+export class HomeService {
   homeData = null;
 
   constructor(
-    private configService: ConfigService,
     private moviesService: MoviesService,
     private tagsService: TagsService,
   ) {}
