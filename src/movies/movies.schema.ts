@@ -28,6 +28,12 @@ export class Movie {
   rating?: number;
 
   @Prop()
+  popularity?: number;
+
+  @Prop()
+  votesNum?: number;
+
+  @Prop()
   votes: string;
 
   @Prop()

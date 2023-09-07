@@ -15,6 +15,12 @@ export class HomeService {
     const data = await this.moviesService.generateMLData();
     return data;
   }
+
+  // async popularity() {
+  //   console.log('first');
+  //   return this.moviesService.popularity();
+  // }
+
   async getHome() {
     if (this.homeData) return this.homeData;
 

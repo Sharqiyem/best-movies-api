@@ -65,6 +65,56 @@ export class MoviesService {
     @InjectModel(Movie.name) private movieModel: PaginateModel<MovieDocument>,
   ) {}
 
+  // async popularity() {
+  //   const data = await this.movieModel
+  //     .find(
+  //       {},
+  //       {
+  //         movieId: 1,
+  //         title: 1,
+  //         rating: 1,
+  //         year: 1,
+  //         votes: 1,
+  //       },
+  //     )
+  //     .skip(40000)
+  //     .sort({ rating: 1, title: 1, year: 1 });
+
+  //   data.forEach(async (doc) => {
+  //     const rating = doc.rating ?? 0;
+  //     const votes = doc.votes ?? '0';
+
+  //     const {
+  //       popularity,
+  //       votesNumRes,
+  //     }: { popularity: number; votesNumRes: number } = this.calcPopularity(
+  //       votes,
+  //       rating,
+  //     );
+
+  //     console.log('calcPopularity', { popularity, votesNumRes, rating, votes });
+  //     const d = await this.movieModel.updateOne(
+  //       { movieId: doc.movieId },
+  //       { $set: { popularity: popularity, votesNum: votesNumRes } },
+  //     );
+  //     console.log('ddd', d);
+  //   });
+  // }
+
+  // calcPopularity(votes: string, rating: number) {
+  //   let votesNumRes = parseFloat(votes);
+  //   if (votes.endsWith('K')) {
+  //     votesNumRes = votesNumRes * 1e3;
+  //   } else if (votes.endsWith('M')) {
+  //     votesNumRes = votesNumRes * 1e6;
+  //   }
+  //   const m = 3000;
+  //   const C = 6.9;
+  //   const popularity =
+  //     (votesNumRes / (votesNumRes + m)) * rating + (m / (votesNumRes + m)) * C;
+  //   return { popularity, votesNumRes };
+  // }
+
   async generateMLData() {
     // [ 'title', 'rating',  'country', 'genre', 'plot', ]
     const data = await this.movieModel
@@ -124,7 +174,7 @@ export class MoviesService {
 
       page: Number(page),
       limit: Number(limit),
-      sort: { rating: -1 },
+      sort: { popularity: -1, rating: -1 },
     };
     const res = await this.movieModel.paginate({ isTVShow: false }, options);
 
@@ -137,7 +187,7 @@ export class MoviesService {
 
       page: Number(page),
       limit: Number(limit),
-      sort: { rating: -1 },
+      sort: { popularity: -1, rating: -1 },
     };
     const res = await this.movieModel.paginate({ isTVShow: true }, options);
 

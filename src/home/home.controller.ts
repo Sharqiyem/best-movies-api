@@ -19,6 +19,12 @@ export class HomesController {
     return await this.homeService.getHome();
   }
 
+  // @Get('/popularity')
+  // async popularity() {
+  //   console.log('popularity');
+  //   return await this.homeService.popularity();
+  // }
+
   @Get('/list/:type/:page')
   async getPopularByType(
     @Param('page') page: number,
